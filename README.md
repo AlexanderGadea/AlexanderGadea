@@ -18,7 +18,6 @@ I-am-vishalmaurya@github
 ```
 <hr>
 
-
 ## My Skills Include
 
 <h4> Languages </h4>
@@ -51,3 +50,9 @@ I-am-vishalmaurya@github
 <img src="https://img.shields.io/badge/jupyter-%23FA0F00.svg?style=for-the-badge&logo=jupyter&logoColor=white">
 <img src="https://img.shields.io/badge/Visual_Studio_Code-0078D4?style=for-the-badge&logo=visual%20studio%20code&logoColor=white">
 <img src="https://img.shields.io/badge/-Arduino-00979D?style=for-the-badge&logo=Arduino&logoColor=white">
+
+## <h2>Github stats:</h2>
+<p align= "center">
+  <img height= "150" src="https://github-readme-stats.vercel.app/api?username=AlexanderGadea&theme=react&show_icons=true&include_all_commits=true" />
+  <img height= "150" src="https://github-readme-stats.vercel.app/api/top-langs/?username=AlexanderGadea&theme=react&layout=compact" />
+</p>
