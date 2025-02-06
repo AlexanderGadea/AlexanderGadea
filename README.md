@@ -4,17 +4,16 @@
 <hr>
 
 ```
-I-am-vishalmaurya@github
+I-am-AlexanderGadea@Giuthub
 -------------------------
-💻 I am a self taught Full Stack Developer and a Machine Learning Developer
-📚 I have a Bachelors in Computer Science from the University of Mumbai at India
-📝 I have a strong interest in Data Science and Artificial Intelligence
-🔭 Working on Deep Learning & Machine Learning
-🌱 Learning about Computer Vision and Machine Learning stuff
-🌟 Main languages: Python, JavaScript
-🚩 Interested in Full Stack Machine Learning Application development
-💖 In a complicated relationship with Neural Networks
-🎵 Love metal, lofi, jazz and soft music
+💻 I am an Electronics Engineering student passionate about backend development and working with databases.
+📚 I am currently learning SQL and Python to step into the world of database programming and web applications.
+📝 I am interested in data analysis, applying modern tools to solve real-world problems.
+🔭 I am exploring backend development for web applications, focusing on database structure and optimization.
+🌱 Learning best programming practices and designing scalable systems.
+🌟 Main languages: Python, SQL.
+🚀 Focused on growing professionally as a backend developer and database expert.
+🎵 I enjoy listening to music while programming, from trap to lofi.
 ```
 <hr>
 
