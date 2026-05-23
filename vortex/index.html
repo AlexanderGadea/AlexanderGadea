@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="theme-color" content="#0f0f0f" />
+    <meta name="description" content="Vortex — Control de inventario" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="Vortex" />
+    <link rel="apple-touch-icon" href="/favicon.svg" />
+    <link rel="manifest" href="/manifest.json" />
+    <title>Vortex</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.47.0/tabler-icons.min.css" />
+    <style>
+      *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+      html { -webkit-text-size-adjust: 100%; }
+      html, body, #root { height: 100%; }
+
+      :root {
+        --brand:      #ff6b2b;
+        --brand-glow: rgba(255,107,43,0.40);
+        --brand-faint: #fff3ee;
+        --bg-bra:     #fff3ee;
+        --bg1:  #ffffff; --bg2: #f5f5f4; --bg3: #ededeb;
+        --bg-pos: #e0f7f7; --bg-war: #fff3e0; --bg-dan: #ffebee; --bg-inf: #ede7f6;
+        --c-pri: #111111; --c-sec: #6b6b6b; --c-ter: #aaaaaa;
+        --c-pos: #007a80; --c-war: #c45c00; --c-dan: #c62828; --c-inf: #5e35b1;
+        --brd3: rgba(0,0,0,0.08); --brd2: rgba(0,0,0,0.16); --brd1: rgba(0,0,0,0.28);
+        --r-md: 10px; --r-lg: 14px;
+        --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      }
+
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --brand-faint: #2d1a00; --bg-bra: #2d1a00;
+          --bg1: #141414; --bg2: #222222; --bg3: #0a0a0a;
+          --bg-pos: #003d40; --bg-war: #3a2000; --bg-dan: #3a1010; --bg-inf: #1a0e3a;
+          --c-pri: #f0f0f0; --c-sec: #999999; --c-ter: #555555;
+          --c-pos: #00c4cc; --c-war: #f59e0b; --c-dan: #ff5252; --c-inf: #9c7fe8;
+          --brd3: rgba(255,255,255,0.07); --brd2: rgba(255,255,255,0.15); --brd1: rgba(255,255,255,0.28);
+        }
+      }
+
+      body {
+        font-family: var(--font);
+        background: var(--bg3);
+        display: flex;
+        justify-content: center;
+        min-height: 100dvh;
+      }
+      #root {
+        width: 100%;
+        max-width: 480px;
+        min-height: 100dvh;
+        background: var(--bg1);
+        box-shadow: 0 0 60px rgba(0,0,0,0.12);
+        overflow-x: hidden;
+        padding-bottom: env(safe-area-inset-bottom, 16px);
+      }
+
+      input, select, textarea {
+        font-family: var(--font);
+        font-size: 15px;
+        color: var(--c-pri);
+        background: var(--bg2);
+        border: 1.5px solid var(--brd2);
+        border-radius: var(--r-md);
+        padding: 10px 14px;
+        outline: none;
+        transition: border-color 0.15s, box-shadow 0.15s;
+        -webkit-appearance: none;
+        appearance: none;
+      }
+      input:focus, select:focus, textarea:focus {
+        border-color: var(--brand);
+        box-shadow: 0 0 0 3px var(--brand-glow);
+      }
+      select {
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2.5'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: right 12px center;
+        padding-right: 36px;
+        cursor: pointer;
+      }
+      input::placeholder, textarea::placeholder { color: var(--c-ter); }
+      button { -webkit-tap-highlight-color: transparent; }
+      button:active { transform: scale(0.97); }
+      ::-webkit-scrollbar { width: 3px; height: 3px; }
+      ::-webkit-scrollbar-thumb { background: var(--brd2); border-radius: 3px; }
+      @keyframes slideDown {
+        from { opacity:0; transform: translateX(-50%) translateY(-14px); }
+        to   { opacity:1; transform: translateX(-50%) translateY(0); }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>
