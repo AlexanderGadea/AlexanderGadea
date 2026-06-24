@@ -15,49 +15,112 @@ const C$S  = n => `C$ ${(+n||0).toLocaleString("es-NI",{minimumFractionDigits:0,
 const C$   = n => `C$ ${(+n||0).toLocaleString("es-NI",{minimumFractionDigits:2,maximumFractionDigits:2})}`;
 const uid  = () => Date.now() + Math.floor(Math.random()*9999);
 const todayISO = () => new Date().toISOString().split("T")[0];
-const nowTime  = () => new Date().toTimeString().slice(0,5); // "HH:MM"
+const nowTime  = () => new Date().toTimeString().slice(0,5);
 const fmtD = d => new Date(d+"T12:00").toLocaleDateString("es-NI",{day:"2-digit",month:"short",year:"numeric"});
 const fmtS = d => new Date(d+"T12:00").toLocaleDateString("es-NI",{day:"2-digit",month:"short"});
 const MONTHS = ["Ene","Feb","Mar","Abr","May","Jun","Jul","Ago","Sep","Oct","Nov","Dic"];
 
-// ─── SEED DATA ──────────────────────────────────────────────────
-const SEED_CATS = ["Fire TV 4K","Fire TV HD","Premium","Accesorio","Otro"];
+// ─── REAL BUSINESS DATA ─────────────────────────────────────────
+// Tipo de cambio Amazon: C$36.6242
+// Pinolero ya cobrado: C$153/u (9 unidades en mano)
+// Pinolero estimado pendiente: ~C$150/u
+
+const SEED_CATS = ["Fire TV HD","Fire TV 4K","Premium","Accesorio","Otro"];
+
 const SEED_PRODUCTS = [
-  {id:1,name:"Fire TV Stick 4K Max", sku:"FTV-4KM",  buyPrice:1400,sellPrice:2400,stock:5,notes:"Gen 2, Alexa Voice Remote Pro",minStock:2,category:"Fire TV 4K"},
-  {id:2,name:"Fire TV Stick Lite",   sku:"FTV-LITE", buyPrice:750, sellPrice:1400,stock:8,notes:"Edición compacta 2022",        minStock:3,category:"Fire TV HD"},
-  {id:3,name:"Fire TV Stick 4K",     sku:"FTV-4K",   buyPrice:1050,sellPrice:1850,stock:1,notes:"Soporte 4K Ultra HD",          minStock:2,category:"Fire TV 4K"},
-  {id:4,name:"Fire TV Cube",         sku:"FTV-CUBE",  buyPrice:3500,sellPrice:5200,stock:0,notes:"Control manos libres",        minStock:1,category:"Premium"},
-  {id:5,name:"Control Remoto Alexa", sku:"RMT-ALX",  buyPrice:400, sellPrice:750, stock:4,notes:"Compatible todas las series", minStock:2,category:"Accesorio"},
-];
-const SEED_TXS = [
-  {id:1, type:"purchase",productId:1,qty:5,unitPrice:1400,total:7000, date:"2025-04-10",time:null, notes:"Amazon US",   discount:0,clientId:null},
-  {id:2, type:"purchase",productId:2,qty:8,unitPrice:750, total:6000, date:"2025-04-10",time:null, notes:"",            discount:0,clientId:null},
-  {id:3, type:"purchase",productId:3,qty:3,unitPrice:1050,total:3150, date:"2025-04-18",time:null, notes:"",            discount:0,clientId:null},
-  {id:4, type:"purchase",productId:4,qty:2,unitPrice:3500,total:7000, date:"2025-04-20",time:null, notes:"Proveedor US",discount:0,clientId:null},
-  {id:5, type:"purchase",productId:5,qty:6,unitPrice:400, total:2400, date:"2025-04-22",time:null, notes:"",            discount:0,clientId:null},
-  {id:6, type:"sale",    productId:1,qty:2,unitPrice:2400,total:4800, date:"2025-05-02",time:"10:30",notes:"",         discount:0,clientId:1},
-  {id:7, type:"sale",    productId:2,qty:3,unitPrice:1400,total:4200, date:"2025-05-05",time:"14:15",notes:"",         discount:0,clientId:2},
-  {id:8, type:"sale",    productId:4,qty:2,unitPrice:5200,total:10400,date:"2025-05-08",time:"09:00",notes:"",         discount:0,clientId:3},
-  {id:9, type:"sale",    productId:3,qty:2,unitPrice:1850,total:3700, date:"2025-05-12",time:"16:45",notes:"",         discount:0,clientId:null},
-  {id:10,type:"sale",    productId:2,qty:2,unitPrice:1330,total:2660, date:"2025-05-14",time:"11:20",notes:"",         discount:5,clientId:4},
-  {id:11,type:"purchase",productId:2,qty:5,unitPrice:750, total:3750, date:"2025-05-15",time:null, notes:"Restock",    discount:0,clientId:null},
-  {id:12,type:"sale",    productId:5,qty:3,unitPrice:750, total:2250, date:"2025-05-17",time:"13:00",notes:"Combo",    discount:0,clientId:1},
-];
-const SEED_CLIENTS = [
-  {id:1,name:"Marcos López",  phone:"8888-1111",notes:"Cliente frecuente"},
-  {id:2,name:"Sofía Ramírez", phone:"8888-2222",notes:""},
-  {id:3,name:"TechNica S.A.", phone:"2222-3333",notes:"Empresa, requiere factura"},
-  {id:4,name:"Pedro Morales", phone:"8888-4444",notes:""},
+  {
+    id:1, name:"Fire TV HD (WiFi 6)", sku:"FTV-HD-W6",
+    buyPrice:747,   // Amazon C$594 + Pinolero C$153
+    sellPrice:1400,
+    stock:8,        // 9 compradas - 1 vendida hoy
+    notes:"Nuevo modelo WiFi6 sin cubo. Amazon: C$594/u · Pinolero: C$153/u · Landed: C$747/u",
+    minStock:3, category:"Fire TV HD"
+  },
+  {
+    id:2, name:"Fire TV 4K Select", sku:"FTV-4K-SEL",
+    buyPrice:821,   // Amazon C$668 + Pinolero C$153
+    sellPrice:1600,
+    stock:12,       // 4 cuentas × 3 unidades
+    notes:"Amazon: C$668/u · Pinolero: C$153/u · Landed: C$821/u",
+    minStock:3, category:"Fire TV 4K"
+  },
+  {
+    id:3, name:"Fire TV 4K Plus", sku:"FTV-4K-PLS",
+    buyPrice:928,   // Amazon C$928/u · Pinolero pendiente (~C$150)
+    sellPrice:1700,
+    stock:6,        // 2 cuentas × 3 unidades
+    notes:"Amazon: C$928/u · Pinolero pendiente ~C$150/u · En tránsito avión",
+    minStock:2, category:"Fire TV 4K"
+  },
+  {
+    id:4, name:"Fire TV 4K Max", sku:"FTV-4K-MAX",
+    buyPrice:1299,  // Amazon C$1,299/u · Pinolero pendiente (~C$150)
+    sellPrice:1900,
+    stock:3,        // Cta. Marjorie
+    notes:"Amazon: C$1,299/u · Pinolero pendiente ~C$150/u · En tránsito avión",
+    minStock:1, category:"Fire TV 4K"
+  },
 ];
 
-// ─── DESIGN ─────────────────────────────────────────────────────
+// Todas las compras reales + venta del 27 abril
+// Lote B: fin de semana 25-26 abril
+// Lote A: 27 abril (hoy)
+// Pinolero pagado hoy: C$1,380 por 9 unidades
+const SEED_TXS = [
+  // ─── LOTE B — Fin de semana (25 abril) ───────────────────────
+  // Cuenta Marjorie — Barco ~3 semanas — C$3,784.81 total (3HD + 3SELECT)
+  { id:101, type:"purchase", productId:1, qty:3, unitPrice:594, total:1781,
+    date:"2025-04-25", time:null, notes:"Lote B · Cta. Marjorie · BARCO ~3 sem.", discount:0, clientId:null },
+  { id:102, type:"purchase", productId:2, qty:3, unitPrice:668, total:2004,
+    date:"2025-04-25", time:null, notes:"Lote B · Cta. Marjorie · BARCO ~3 sem.", discount:0, clientId:null },
+  // Cuenta Yisleni — Avión — YA EN MANO — C$3,784.81 total (3HD + 3SELECT)
+  { id:103, type:"purchase", productId:1, qty:3, unitPrice:594, total:1781,
+    date:"2025-04-25", time:null, notes:"Lote B · Cta. Yisleni · ✅ YA EN MANO", discount:0, clientId:null },
+  { id:104, type:"purchase", productId:2, qty:3, unitPrice:668, total:2004,
+    date:"2025-04-25", time:null, notes:"Lote B · Cta. Yisleni · ✅ YA EN MANO", discount:0, clientId:null },
+  // Cuenta Gago — Avión — YA EN MANO — C$2,003.79 total (3SELECT)
+  { id:105, type:"purchase", productId:2, qty:3, unitPrice:668, total:2004,
+    date:"2025-04-25", time:null, notes:"Lote B · Cta. Gago · ✅ YA EN MANO", discount:0, clientId:null },
+  // Cuenta Relatos — Avión — ETA jueves próximo — C$3,784.81 total (3HD + 3SELECT)
+  { id:106, type:"purchase", productId:1, qty:3, unitPrice:594, total:1781,
+    date:"2025-04-25", time:null, notes:"Lote B · Cta. Relatos · ✈ ETA jueves", discount:0, clientId:null },
+  { id:107, type:"purchase", productId:2, qty:3, unitPrice:668, total:2004,
+    date:"2025-04-25", time:null, notes:"Lote B · Cta. Relatos · ✈ ETA jueves", discount:0, clientId:null },
+
+  // ─── LOTE A — 27 abril (hoy) ─────────────────────────────────
+  // Cuenta Marjorie — Avión — ETA mar/mié próxima semana
+  // C$6,680.79 total (3 PLUS + 3 MAX). Pinolero pendiente
+  { id:108, type:"purchase", productId:3, qty:3, unitPrice:928, total:2784,
+    date:"2025-04-27", time:null, notes:"Lote A · Cta. Marjorie · ✈ ETA mar/mié · Pinolero pendiente", discount:0, clientId:null },
+  { id:109, type:"purchase", productId:4, qty:3, unitPrice:1299, total:3897,
+    date:"2025-04-27", time:null, notes:"Lote A · Cta. Marjorie · ✈ ETA mar/mié · Pinolero pendiente", discount:0, clientId:null },
+  // Cuenta Yisleni — Avión — ETA mar/mié próxima semana
+  // C$2,783.48 total (3 PLUS). Pinolero pendiente
+  { id:110, type:"purchase", productId:3, qty:3, unitPrice:928, total:2784,
+    date:"2025-04-27", time:null, notes:"Lote A · Cta. Yisleni · ✈ ETA mar/mié · Pinolero pendiente", discount:0, clientId:null },
+
+  // ─── PINOLERO — 27 abril ─────────────────────────────────────
+  // C$1,380 por 9 unidades en mano (6 Yisleni + 3 SELECT Gago)
+  // 6 libras · $37.50 · C$153/u
+  { id:111, type:"purchase", productId:null, qty:9, unitPrice:153, total:1380,
+    date:"2025-04-27", time:null, notes:"Pinolero Box · 9 u. · 6 lbs · $37.50 · C$153/u · (6 Yisleni + 3 SELECT Gago)", discount:0, clientId:null },
+
+  // ─── VENTA — 27 abril ────────────────────────────────────────
+  // Fire TV HD · C$1,400 (incluye C$100 delivery) · Ganancia neta ~C$653
+  { id:112, type:"sale", productId:1, qty:1, unitPrice:1400, total:1400,
+    date:"2025-04-27", time:"", notes:"Incluye C$100 delivery · Ganancia neta ~C$653", discount:0, clientId:null },
+];
+
+const SEED_CLIENTS = [];
+
+// ─── DESIGN TOKENS ──────────────────────────────────────────────
 const R = {
-  card:  {background:"var(--bg1)",border:"0.5px solid var(--brd3)",borderRadius:16,padding:"1rem 1.25rem",marginBottom:10},
-  surf:  {background:"var(--bg2)",borderRadius:12,padding:"0.875rem 1rem"},
-  row:   {display:"flex",alignItems:"center"},
-  rowB:  {display:"flex",alignItems:"center",justifyContent:"space-between"},
-  col:   {display:"flex",flexDirection:"column"},
-  label: {fontSize:11,fontWeight:700,color:"var(--c-ter)",textTransform:"uppercase",letterSpacing:"0.09em"},
+  card:  { background:"var(--bg1)", border:"0.5px solid var(--brd3)", borderRadius:16, padding:"1rem 1.25rem", marginBottom:10 },
+  surf:  { background:"var(--bg2)", borderRadius:12, padding:"0.875rem 1rem" },
+  row:   { display:"flex", alignItems:"center" },
+  rowB:  { display:"flex", alignItems:"center", justifyContent:"space-between" },
+  col:   { display:"flex", flexDirection:"column" },
+  label: { fontSize:11, fontWeight:700, color:"var(--c-ter)", textTransform:"uppercase", letterSpacing:"0.09em" },
 };
 
 // ─── PRIMITIVES ─────────────────────────────────────────────────
@@ -71,17 +134,17 @@ function Badge({v="neutral",icon,children,sm}) {
 
 function Btn({onClick,v="ghost",full,sm,lg,children,sx={},disabled,icon}) {
   const m={
-    ghost:      {bg:"transparent",       bo:"1px solid var(--brd2)",tc:"var(--c-pri)"},
-    brand:      {bg:"var(--brand)",      bo:"none",tc:"#fff",sh:"0 4px 18px var(--brand-glow)"},
-    positive:   {bg:"var(--c-pos)",      bo:"none",tc:"var(--bg1)"},
-    warning:    {bg:"var(--c-war)",      bo:"none",tc:"#fff"},
-    danger:     {bg:"var(--c-dan)",      bo:"none",tc:"#fff"},
-    info:       {bg:"var(--c-inf)",      bo:"none",tc:"#fff"},
-    dark:       {bg:"var(--c-pri)",      bo:"none",tc:"var(--bg1)"},
-    "ghost-brand":{bg:"var(--bg-bra)",   bo:"none",tc:"var(--brand)"},
-    "ghost-pos": {bg:"var(--bg-pos)",    bo:"none",tc:"var(--c-pos)"},
-    "ghost-war": {bg:"var(--bg-war)",    bo:"none",tc:"var(--c-war)"},
-    "ghost-dan": {bg:"var(--bg-dan)",    bo:"none",tc:"var(--c-dan)"},
+    ghost:       {bg:"transparent",     bo:"1px solid var(--brd2)", tc:"var(--c-pri)"},
+    brand:       {bg:"var(--brand)",     bo:"none", tc:"#fff", sh:"0 4px 18px var(--brand-glow)"},
+    positive:    {bg:"var(--c-pos)",     bo:"none", tc:"var(--bg1)"},
+    warning:     {bg:"var(--c-war)",     bo:"none", tc:"#fff"},
+    danger:      {bg:"var(--c-dan)",     bo:"none", tc:"#fff"},
+    info:        {bg:"var(--c-inf)",     bo:"none", tc:"#fff"},
+    dark:        {bg:"var(--c-pri)",     bo:"none", tc:"var(--bg1)"},
+    "ghost-brand":{bg:"var(--bg-bra)",  bo:"none", tc:"var(--brand)"},
+    "ghost-pos": {bg:"var(--bg-pos)",   bo:"none", tc:"var(--c-pos)"},
+    "ghost-war": {bg:"var(--bg-war)",   bo:"none", tc:"var(--c-war)"},
+    "ghost-dan": {bg:"var(--bg-dan)",   bo:"none", tc:"var(--c-dan)"},
   };
   const {bg,bo,tc,sh}=m[v]||m.ghost;
   return <button onClick={onClick} disabled={disabled} style={{display:"inline-flex",alignItems:"center",justifyContent:"center",gap:7,padding:lg?"14px 24px":sm?"6px 14px":"10px 20px",borderRadius:10,fontWeight:700,fontSize:lg?16:sm?12:14,cursor:disabled?"not-allowed":"pointer",fontFamily:"inherit",background:bg,border:bo,color:tc,width:full?"100%":"auto",opacity:disabled?0.45:1,boxShadow:sh||"none",...sx}}>
@@ -89,21 +152,19 @@ function Btn({onClick,v="ghost",full,sm,lg,children,sx={},disabled,icon}) {
   </button>;
 }
 
-function IconBtn({onClick,icon,v="ghost",size=36,sx={}}) {
-  const m={ghost:{bg:"var(--bg2)",tc:"var(--c-sec)"},brand:{bg:"var(--brand)",tc:"#fff"},danger:{bg:"var(--bg-dan)",tc:"var(--c-dan)"},dark:{bg:"rgba(255,255,255,0.12)",tc:"#fff"}};
-  const {bg,tc}=m[v]||m.ghost;
-  return <button onClick={onClick} style={{width:size,height:size,borderRadius:size/3,background:bg,border:"none",cursor:"pointer",color:tc,display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,...sx}}>
+function IconBtn({onClick,icon,size=36,sx={}}) {
+  return <button onClick={onClick} style={{width:size,height:size,borderRadius:size/3,background:"var(--bg2)",border:"none",cursor:"pointer",color:"var(--c-sec)",display:"flex",alignItems:"center",justifyContent:"center",flexShrink:0,...sx}}>
     <i className={`ti ${icon}`} style={{fontSize:size*0.5}} aria-hidden/>
   </button>;
 }
 
 function StatCard({label,value,sub,icon,color="brand"}) {
   const m={
-    brand:   {g:"linear-gradient(135deg,#ff6b2b,#ff4500)",sh:"0 8px 24px var(--brand-glow)"},
-    positive:{g:"linear-gradient(135deg,#00c4cc,#0099cc)",sh:"0 8px 24px rgba(0,196,204,0.35)"},
-    info:    {g:"linear-gradient(135deg,#7c3aed,#6d28d9)",sh:"0 8px 24px rgba(124,58,237,0.35)"},
-    warning: {g:"linear-gradient(135deg,#f59e0b,#d97706)",sh:"0 8px 24px rgba(245,158,11,0.3)"},
-    neutral: {g:"var(--bg2)",sh:"none",dark:true},
+    brand:   {g:"linear-gradient(135deg,#ff6b2b,#ff4500)", sh:"0 8px 24px var(--brand-glow)"},
+    positive:{g:"linear-gradient(135deg,#00c4cc,#0099cc)", sh:"0 8px 24px rgba(0,196,204,0.35)"},
+    info:    {g:"linear-gradient(135deg,#7c3aed,#6d28d9)", sh:"0 8px 24px rgba(124,58,237,0.35)"},
+    warning: {g:"linear-gradient(135deg,#f59e0b,#d97706)", sh:"0 8px 24px rgba(245,158,11,0.3)"},
+    neutral: {g:"var(--bg2)", sh:"none", dark:true},
   };
   const {g,sh,dark}=m[color]||m.neutral;
   return <div style={{background:g,borderRadius:18,padding:"1.1rem 1.2rem",boxShadow:sh,border:dark?"0.5px solid var(--brd3)":"none"}}>
@@ -148,7 +209,7 @@ function SparkBar({data,color="var(--brand)",height=44}) {
 function Toast({toast}) {
   if(!toast) return null;
   const ok=toast.type!=="err";
-  return <div style={{position:"fixed",top:16,left:"50%",transform:"translateX(-50%)",zIndex:999,maxWidth:360,width:"calc(100% - 32px)",display:"flex",alignItems:"center",gap:10,padding:"12px 18px",borderRadius:14,fontSize:14,fontWeight:700,background:ok?"var(--c-pos)":"var(--c-dan)",color:"var(--bg1)",boxShadow:"0 8px 32px rgba(0,0,0,0.3)",animation:"slideDown 0.25s ease"}}>
+  return <div style={{position:"fixed",top:16,left:"50%",transform:"translateX(-50%)",zIndex:999,maxWidth:360,width:"calc(100% - 32px)",display:"flex",alignItems:"center",gap:10,padding:"12px 18px",borderRadius:14,fontSize:14,fontWeight:700,background:ok?"var(--c-pos)":"var(--c-dan)",color:ok?"#fff":"#fff",boxShadow:"0 8px 32px rgba(0,0,0,0.3)",animation:"slideDown 0.25s ease"}}>
     <i className={`ti ${ok?"ti-circle-check":"ti-alert-circle"}`} style={{fontSize:20,flexShrink:0}} aria-hidden/>{toast.msg}
   </div>;
 }
@@ -218,7 +279,7 @@ function Empty({icon,title,text,action}) {
 
 function SectionLabel({text,action}) {
   return <div style={{...R.rowB,marginBottom:12}}>
-    <span style={{...R.label}}>{text}</span>
+    <span style={R.label}>{text}</span>
     {action}
   </div>;
 }
@@ -231,7 +292,7 @@ function Avatar({name,size=40}) {
   </div>;
 }
 
-// ─── CATEGORY MANAGER ───────────────────────────────────────────
+// ─── CATEGORY MANAGER ────────────────────────────────────────────
 function CategoryManager({categories,onSave,onClose}) {
   const [cats,setCats]=useState([...categories]);
   const [newCat,setNewCat]=useState("");
@@ -253,7 +314,7 @@ function CategoryManager({categories,onSave,onClose}) {
               <div style={{width:8,height:8,borderRadius:99,background:"var(--brand)",flexShrink:0}}/>
               <span style={{fontSize:14,fontWeight:600,color:"var(--c-pri)"}}>{c}</span>
             </div>
-            <IconBtn onClick={()=>remove(c)} icon="ti-trash" v="danger" size={30}/>
+            <IconBtn onClick={()=>remove(c)} icon="ti-trash" sx={{background:"var(--bg-dan)",color:"var(--c-dan)"}} size={30}/>
           </div>
         ))}
       </div>
@@ -281,7 +342,7 @@ function ProductForm({product,categories,onSave,onDelete,onBack}) {
   const mPct=margin!==null&&+f.sellPrice>0?((margin/+f.sellPrice)*100).toFixed(1):null;
   const validate=()=>{const e={};if(!f.name)e.name="Requerido";if(!+f.buyPrice)e.buyPrice="Requerido";if(!+f.sellPrice)e.sellPrice="Requerido";setErr(e);return!Object.keys(e).length;};
   return <div>
-    {confirm&&<ConfirmModal title="¿Eliminar producto?" msg={`Se eliminará "${f.name}" junto con todo su historial de movimientos. Esta acción no se puede deshacer.`} onConfirm={()=>onDelete(f.id)} onCancel={()=>setConfirm(false)}/>}
+    {confirm&&<ConfirmModal title="¿Eliminar producto?" msg={`Se eliminará "${f.name}" y todo su historial. Esta acción no se puede deshacer.`} onConfirm={()=>onDelete(f.id)} onCancel={()=>setConfirm(false)}/>}
     <BackHeader title={isEdit?"Editar producto":"Nuevo producto"} sub={isEdit?f.sku||"Sin SKU":null} onBack={onBack}
       action={<Btn onClick={()=>{if(validate())onSave(f);}} v="brand" sm icon="ti-check">Guardar</Btn>}/>
     <div style={{padding:"20px",...R.col,gap:16}}>
@@ -295,10 +356,10 @@ function ProductForm({product,categories,onSave,onDelete,onBack}) {
         </div>
       </Field>
       <Field label="Nombre del producto *" error={err.name}>
-        <input value={f.name} onChange={set("name")} placeholder="Ej: Fire TV Stick 4K Max" style={{width:"100%",borderColor:err.name?"var(--c-dan)":""}}/>
+        <input value={f.name} onChange={set("name")} placeholder="Ej: Fire TV 4K Max" style={{width:"100%",borderColor:err.name?"var(--c-dan)":""}}/>
       </Field>
       <Field label="SKU / Código">
-        <input value={f.sku} onChange={set("sku")} placeholder="Ej: FTV-4KM" style={{width:"100%"}}/>
+        <input value={f.sku} onChange={set("sku")} placeholder="Ej: FTV-4K-MAX" style={{width:"100%"}}/>
       </Field>
       <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
         <Field label="Precio compra (C$) *" error={err.buyPrice}>
@@ -319,15 +380,15 @@ function ProductForm({product,categories,onSave,onDelete,onBack}) {
         <Field label="Stock actual"><input type="number" min="0" value={f.stock} onChange={set("stock")} style={{width:"100%"}}/></Field>
         <Field label="Alerta mínima"><input type="number" min="0" value={f.minStock} onChange={set("minStock")} placeholder="2" style={{width:"100%"}}/></Field>
       </div>
-      <Field label="Notas / Descripción">
-        <textarea value={f.notes} onChange={set("notes")} rows={3} placeholder="Características, variante, descripción…" style={{width:"100%",resize:"vertical",fontFamily:"inherit"}}/>
+      <Field label="Notas / Costos detallados">
+        <textarea value={f.notes} onChange={set("notes")} rows={3} placeholder="Amazon, Pinolero, costo total, variante…" style={{width:"100%",resize:"vertical",fontFamily:"inherit"}}/>
       </Field>
       {isEdit&&<><Divider my={4}/><Btn onClick={()=>setConfirm(true)} v="danger" full lg icon="ti-trash">Eliminar producto</Btn></>}
     </div>
   </div>;
 }
 
-// ─── SALE FORM ───────────────────────────────────────────────────
+// ─── SALE FORM ────────────────────────────────────────────────────
 function SaleForm({products,clients,initPid,onSave,onBack}) {
   const def=products.find(p=>p.id===initPid)||products.find(p=>p.stock>0)||products[0];
   const [f,setF]=useState({productId:def?.id||"",qty:"1",unitPrice:def?.sellPrice||"",discount:"0",date:todayISO(),time:nowTime(),notes:"",clientId:""});
@@ -351,7 +412,7 @@ function SaleForm({products,clients,initPid,onSave,onBack}) {
         </select>
       </Field>
       {prod&&<div style={{...R.surf,display:"flex",flexWrap:"wrap",gap:"6px 20px"}}>
-        <span style={{fontSize:13,color:"var(--c-sec)"}}>Sugerido: <strong style={{color:"var(--c-pos)"}}>{C$S(prod.sellPrice)}</strong></span>
+        <span style={{fontSize:13,color:"var(--c-sec)"}}>Precio: <strong style={{color:"var(--c-pos)"}}>{C$S(prod.sellPrice)}</strong></span>
         <span style={{fontSize:13,color:"var(--c-sec)"}}>Stock: <strong>{prod.stock} u.</strong></span>
         <span style={{fontSize:13,color:"var(--c-sec)"}}>Costo: <strong style={{color:"var(--c-war)"}}>{C$S(prod.buyPrice)}</strong></span>
       </div>}
@@ -366,30 +427,26 @@ function SaleForm({products,clients,initPid,onSave,onBack}) {
       <Field label={`Descuento %${disc>0?` → Precio final: ${C$S(finalP)}/u`:""}`}>
         <input type="number" min="0" max="100" value={f.discount} onChange={set("discount")} style={{width:"100%"}}/>
       </Field>
-
-      {/* DATE + TIME */}
       <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
         <Field label="Fecha de la venta">
           <input type="date" value={f.date} onChange={set("date")} style={{width:"100%"}}/>
         </Field>
-        <Field label="Hora de la venta" hint="Formato 24h (HH:MM)">
+        <Field label="Hora de la venta" hint="Formato 24h">
           <div style={{position:"relative"}}>
             <input type="time" value={f.time} onChange={set("time")} style={{width:"100%",paddingRight:36}}/>
             <i className="ti ti-clock" style={{position:"absolute",right:10,top:"50%",transform:"translateY(-50%)",color:"var(--c-ter)",fontSize:16,pointerEvents:"none"}} aria-hidden/>
           </div>
         </Field>
       </div>
-
       <Field label="Cliente (opcional)">
         <select value={f.clientId} onChange={set("clientId")} style={{width:"100%",fontFamily:"inherit"}}>
           <option value="">— Sin cliente —</option>
           {clients.map(c=><option key={c.id} value={c.id}>{c.name}</option>)}
         </select>
       </Field>
-      <Field label="Notas / Observaciones">
-        <input value={f.notes} onChange={set("notes")} placeholder="Ej: Pago en efectivo, envío a Masaya…" style={{width:"100%"}}/>
+      <Field label="Notas">
+        <input value={f.notes} onChange={set("notes")} placeholder="Ej: Incluye delivery C$100…" style={{width:"100%"}}/>
       </Field>
-
       {total>0&&<div style={{background:"linear-gradient(135deg,#00c4cc,#0099cc)",borderRadius:16,padding:"18px 20px",boxShadow:"0 6px 20px rgba(0,196,204,0.35)"}}>
         <div style={R.rowB}>
           <span style={{fontSize:14,color:"rgba(255,255,255,0.8)"}}>Total de venta</span>
@@ -404,7 +461,7 @@ function SaleForm({products,clients,initPid,onSave,onBack}) {
   </div>;
 }
 
-// ─── PURCHASE FORM ───────────────────────────────────────────────
+// ─── PURCHASE FORM ────────────────────────────────────────────────
 function PurchaseForm({products,initPid,onSave,onBack}) {
   const def=products.find(p=>p.id===initPid)||products[0];
   const [f,setF]=useState({productId:def?.id||"",qty:"1",unitPrice:def?.buyPrice||"",date:todayISO(),notes:""});
@@ -413,32 +470,36 @@ function PurchaseForm({products,initPid,onSave,onBack}) {
   const chProd=e=>{const p=products.find(x=>x.id===+e.target.value);setF(pv=>({...pv,productId:e.target.value,unitPrice:p?.buyPrice||""}));};
   const prod=products.find(p=>p.id===+f.productId);
   const total=(+f.unitPrice||0)*(+f.qty||0);
-  const validate=()=>{const e={};if(!f.productId)e.productId="Selecciona un producto";if(!+f.qty)e.qty="Requerido";if(!+f.unitPrice)e.unitPrice="Requerido";setErr(e);return!Object.keys(e).length;};
+  const validate=()=>{const e={};if(!f.qty)e.qty="Requerido";if(!+f.unitPrice)e.unitPrice="Requerido";setErr(e);return!Object.keys(e).length;};
   return <div>
-    <BackHeader title="Nueva compra" onBack={onBack}
+    <BackHeader title="Nueva compra / gasto" onBack={onBack}
       action={<Btn onClick={()=>{if(validate())onSave(f);}} v="warning" sm icon="ti-check">Registrar</Btn>}/>
     <div style={{padding:"20px",...R.col,gap:14}}>
-      <Field label="Producto *" error={err.productId}>
-        <select value={f.productId} onChange={chProd} style={{width:"100%",fontFamily:"inherit",borderColor:err.productId?"var(--c-dan)":""}}>
-          <option value="">— Seleccionar producto —</option>
+      <Field label="Producto (opcional — dejar en blanco para gastos logísticos)" error={err.productId}>
+        <select value={f.productId} onChange={chProd} style={{width:"100%",fontFamily:"inherit"}}>
+          <option value="">— Gasto logístico / sin producto —</option>
           {products.map(p=><option key={p.id} value={p.id}>{p.name}</option>)}
         </select>
       </Field>
       {prod&&<div style={R.surf}>
-        <span style={{fontSize:13,color:"var(--c-sec)"}}>Precio habitual: <strong style={{color:"var(--c-war)"}}>{C$S(prod.buyPrice)}</strong></span>
+        <span style={{fontSize:13,color:"var(--c-sec)"}}>Costo habitual: <strong style={{color:"var(--c-war)"}}>{C$S(prod.buyPrice)}</strong></span>
         <span style={{fontSize:13,color:"var(--c-sec)",marginLeft:20}}>Stock actual: <strong>{prod.stock} u.</strong></span>
       </div>}
       <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
-        <Field label="Cantidad" error={err.qty}><input type="number" min="1" value={f.qty} onChange={set("qty")} style={{width:"100%",borderColor:err.qty?"var(--c-dan)":""}}/></Field>
-        <Field label="Precio unitario (C$)" error={err.unitPrice}><input type="number" min="0" value={f.unitPrice} onChange={set("unitPrice")} style={{width:"100%",borderColor:err.unitPrice?"var(--c-dan)":""}}/></Field>
+        <Field label="Cantidad" error={err.qty}>
+          <input type="number" min="1" value={f.qty} onChange={set("qty")} style={{width:"100%",borderColor:err.qty?"var(--c-dan)":""}}/>
+        </Field>
+        <Field label="Precio unitario (C$)" error={err.unitPrice}>
+          <input type="number" min="0" value={f.unitPrice} onChange={set("unitPrice")} style={{width:"100%",borderColor:err.unitPrice?"var(--c-dan)":""}}/>
+        </Field>
       </div>
       <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:12}}>
         <Field label="Fecha"><input type="date" value={f.date} onChange={set("date")} style={{width:"100%"}}/></Field>
-        <Field label="Proveedor / Notas"><input value={f.notes} onChange={set("notes")} placeholder="Amazon US, DHL…" style={{width:"100%"}}/></Field>
+        <Field label="Proveedor / Cuenta / Notas"><input value={f.notes} onChange={set("notes")} placeholder="Cta. Marjorie, Pinolero…" style={{width:"100%"}}/></Field>
       </div>
       {total>0&&<div style={{background:"linear-gradient(135deg,#f59e0b,#d97706)",borderRadius:16,padding:"18px 20px",boxShadow:"0 6px 20px rgba(245,158,11,0.3)"}}>
         <div style={R.rowB}>
-          <span style={{fontSize:14,color:"rgba(255,255,255,0.8)"}}>Total a invertir</span>
+          <span style={{fontSize:14,color:"rgba(255,255,255,0.8)"}}>Total a registrar</span>
           <span style={{fontSize:34,fontWeight:800,color:"#fff"}}>{C$S(total)}</span>
         </div>
       </div>}
@@ -448,7 +509,7 @@ function PurchaseForm({products,initPid,onSave,onBack}) {
 
 // ─── PRODUCT DETAIL ──────────────────────────────────────────────
 function ProductDetail({product,txs,clients,onEdit,onSale,onPurchase,onBack}) {
-  const myTxs=[...txs].filter(t=>t.productId===product.id).sort((a,b)=>{const da=a.date+(a.time||"");const db=b.date+(b.time||"");return db.localeCompare(da);});
+  const myTxs=[...txs].filter(t=>t.productId===product.id).sort((a,b)=>(b.date+(b.time||"")).localeCompare(a.date+(a.time||"")));
   const sales=myTxs.filter(t=>t.type==="sale");
   const soldQty=sales.reduce((s,t)=>s+t.qty,0);
   const revenue=sales.reduce((s,t)=>s+t.total,0);
@@ -458,13 +519,13 @@ function ProductDetail({product,txs,clients,onEdit,onSale,onPurchase,onBack}) {
   const n=new Date();
   const spark=Array.from({length:6},(_,i)=>{const d=new Date(n);d.setMonth(d.getMonth()-5+i);const m=d.getMonth(),y=d.getFullYear();return myTxs.filter(t=>t.type==="sale"&&new Date(t.date+"T12:00").getMonth()===m&&new Date(t.date+"T12:00").getFullYear()===y).reduce((s,t)=>s+t.qty,0);});
   return <div>
-    <BackHeader title={product.name} sub={`${product.sku||"Sin SKU"} · ${product.category||"Sin categoría"}`} onBack={onBack} action={<Btn onClick={onEdit} sm icon="ti-edit">Editar</Btn>}/>
+    <BackHeader title={product.name} sub={`${product.sku||"Sin SKU"} · ${product.category||""}`} onBack={onBack} action={<Btn onClick={onEdit} sm icon="ti-edit">Editar</Btn>}/>
     <div style={{background:"linear-gradient(160deg,#0f0f0f,#1e1200)",padding:"24px 20px 20px"}}>
       <div style={{...R.rowB,marginBottom:20}}>
         <div>
-          <div style={{fontSize:11,color:"rgba(255,255,255,0.4)",textTransform:"uppercase",letterSpacing:"0.08em",marginBottom:4}}>Stock actual</div>
+          <div style={{fontSize:11,color:"rgba(255,255,255,0.4)",textTransform:"uppercase",letterSpacing:"0.08em",marginBottom:4}}>Stock</div>
           <div style={{fontSize:64,fontWeight:800,lineHeight:1,color:product.stock>0?"var(--c-pos)":"var(--c-dan)"}}>{product.stock}</div>
-          <div style={{fontSize:13,color:"rgba(255,255,255,0.4)",marginTop:4}}>unidades disponibles</div>
+          <div style={{fontSize:13,color:"rgba(255,255,255,0.4)",marginTop:4}}>unidades</div>
         </div>
         <div style={{textAlign:"right"}}>
           <div style={{fontSize:11,color:"rgba(255,255,255,0.4)",textTransform:"uppercase",letterSpacing:"0.08em",marginBottom:4}}>Valor inventario</div>
@@ -474,20 +535,17 @@ function ProductDetail({product,txs,clients,onEdit,onSale,onPurchase,onBack}) {
         </div>
       </div>
       <ProgressBar val={product.stock} max={Math.max(product.stock+soldQty,10)} color="var(--brand)" h={4}/>
-      <div style={{...R.rowB,marginTop:4,fontSize:11,color:"rgba(255,255,255,0.3)"}}>
-        <span>0</span><span>Mín: {product.minStock||2}</span><span>{Math.max(product.stock+soldQty,10)}</span>
-      </div>
     </div>
     <div style={{padding:"16px 20px"}}>
       <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10,marginBottom:14}}>
-        {[["Costo compra",C$(product.buyPrice),"war"],["Precio venta",C$(product.sellPrice),"pos"],["Margen/unidad",`${C$S(margin)} (${mPct}%)`,"brand"],["Ganancia total",C$S(profit),"pos"],["Unid. vendidas",`${soldQty} u.`,"inf"],["Ingresos",C$S(revenue),"inf"]].map(([l,v,c])=>(
+        {[["Costo landed",C$(product.buyPrice),"war"],["Precio venta",C$(product.sellPrice),"pos"],["Margen/unidad",`${C$S(margin)} (${mPct}%)`,"brand"],["Ganancia total",C$S(profit),"pos"],["Unid. vendidas",`${soldQty} u.`,"inf"],["Ingresos",C$S(revenue),"inf"]].map(([l,v,c])=>(
           <div key={l} style={R.surf}>
             <div style={{...R.label,marginBottom:4}}>{l}</div>
             <div style={{fontSize:15,fontWeight:800,color:c==="brand"?"var(--brand)":`var(--c-${c})`}}>{v}</div>
           </div>
         ))}
       </div>
-      {product.notes&&<div style={{...R.surf,marginBottom:14}}><div style={{...R.label,marginBottom:4}}>Notas</div><div style={{fontSize:14,color:"var(--c-pri)",lineHeight:1.5}}>{product.notes}</div></div>}
+      {product.notes&&<div style={{...R.surf,marginBottom:14}}><div style={{...R.label,marginBottom:4}}>Notas / Costos</div><div style={{fontSize:13,color:"var(--c-pri)",lineHeight:1.6}}>{product.notes}</div></div>}
       <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10,marginBottom:24}}>
         <Btn onClick={onSale}     v="positive" full lg icon="ti-receipt">Vender</Btn>
         <Btn onClick={onPurchase} v="warning"  full lg icon="ti-package">Restock</Btn>
@@ -503,9 +561,7 @@ function ProductDetail({product,txs,clients,onEdit,onSale,onPurchase,onBack}) {
             </div>
             <div>
               <div style={{fontSize:14,fontWeight:700,color:"var(--c-pri)"}}>{t.type==="sale"?"Venta":"Compra"} · {t.qty} u.</div>
-              <div style={{fontSize:12,color:"var(--c-sec)"}}>
-                {fmtS(t.date)}{t.time?` · ${t.time}`:""}{cli?` · ${cli.name}`:t.notes?` · ${t.notes}`:""}{t.discount>0?` · Desc ${t.discount}%`:""}
-              </div>
+              <div style={{fontSize:12,color:"var(--c-sec)"}}>{fmtS(t.date)}{t.time?` ${t.time}`:""}{cli?` · ${cli.name}`:t.notes?` · ${t.notes}`:""}</div>
             </div>
           </div>
           <div style={{textAlign:"right",flexShrink:0,marginLeft:8}}>
@@ -525,12 +581,12 @@ function ClientForm({client,onSave,onDelete,onBack}) {
   const [confirm,setConfirm]=useState(false);
   const set=k=>e=>setF(p=>({...p,[k]:e.target.value}));
   return <div>
-    {confirm&&<ConfirmModal title="¿Eliminar cliente?" msg="Se eliminará este cliente del directorio." onConfirm={()=>onDelete(f.id)} onCancel={()=>setConfirm(false)}/>}
+    {confirm&&<ConfirmModal title="¿Eliminar cliente?" msg="Se eliminará este cliente." onConfirm={()=>onDelete(f.id)} onCancel={()=>setConfirm(false)}/>}
     <BackHeader title={isEdit?"Editar cliente":"Nuevo cliente"} onBack={onBack} action={<Btn onClick={()=>onSave(f)} v="brand" sm icon="ti-check">Guardar</Btn>}/>
     <div style={{padding:"20px",...R.col,gap:14}}>
-      <Field label="Nombre completo *"><input value={f.name} onChange={set("name")} placeholder="Juan Pérez" style={{width:"100%"}}/></Field>
+      <Field label="Nombre *"><input value={f.name} onChange={set("name")} placeholder="Juan Pérez" style={{width:"100%"}}/></Field>
       <Field label="Teléfono / WhatsApp"><input value={f.phone} onChange={set("phone")} placeholder="8888-0000" style={{width:"100%"}}/></Field>
-      <Field label="Notas"><textarea value={f.notes} onChange={set("notes")} rows={3} placeholder="Empresa, preferencias, dirección…" style={{width:"100%",resize:"vertical",fontFamily:"inherit"}}/></Field>
+      <Field label="Notas"><textarea value={f.notes} onChange={set("notes")} rows={3} placeholder="Empresa, dirección, preferencias…" style={{width:"100%",resize:"vertical",fontFamily:"inherit"}}/></Field>
       {isEdit&&<><Divider/><Btn onClick={()=>setConfirm(true)} v="danger" full icon="ti-trash">Eliminar cliente</Btn></>}
     </div>
   </div>;
@@ -540,13 +596,14 @@ function ClientForm({client,onSave,onDelete,onBack}) {
 //  MAIN APP
 // ══════════════════════════════════════════════════════════════════
 export default function App() {
-  const [products,   setProducts]   = usePersist("vortex_products",   SEED_PRODUCTS);
-  const [txs,        setTxs]        = usePersist("vortex_txs",        SEED_TXS);
-  const [clients,    setClients]    = usePersist("vortex_clients",     SEED_CLIENTS);
-  const [categories, setCategories] = usePersist("vortex_categories", SEED_CATS);
+  // All hooks at top level (no conditional hooks — fixes "Ver todo" / Movimientos bug)
+  const [products,   setProducts]   = usePersist("vortex2_products",   SEED_PRODUCTS);
+  const [txs,        setTxs]        = usePersist("vortex2_txs",        SEED_TXS);
+  const [clients,    setClients]    = usePersist("vortex2_clients",     SEED_CLIENTS);
+  const [categories, setCategories] = usePersist("vortex2_categories", SEED_CATS);
   const [view,       setView]       = useState({name:"main"});
   const [tab,        setTab]        = useState("home");
-  const [mvTab,      setMvTab]      = useState("sales");
+  const [mvTab,      setMvTab]      = useState("sales"); // lifted — was inside render (bug source)
   const [toast,      setToastSt]    = useState(null);
   const [search,     setSearch]     = useState("");
   const [catFilter,  setCat]        = useState("Todos");
@@ -628,10 +685,10 @@ export default function App() {
   },[showToast]);
 
   const exportCSV=useCallback(()=>{
-    const h1=["Producto","SKU","Categoría","P.Compra","P.Venta","Stock","Valor","Margen"];
+    const h1=["Producto","SKU","Categoría","Costo Landed","P.Venta","Stock","Valor Inv","Margen"];
     const r1=products.map(p=>[p.name,p.sku||"",p.category||"",p.buyPrice,p.sellPrice,p.stock,(p.buyPrice*p.stock).toFixed(0),(p.sellPrice-p.buyPrice).toFixed(0)]);
     const h2=["Tipo","Producto","Cantidad","P.Unitario","Total","Descuento","Fecha","Hora","Cliente","Notas"];
-    const r2=[...txs].sort((a,b)=>b.date.localeCompare(a.date)).map(t=>{const p=getProd(t.productId);const c=getClient(t.clientId);return[t.type==="sale"?"Venta":"Compra",p?.name||"",t.qty,(+t.unitPrice).toFixed(0),t.total.toFixed(0),t.discount?t.discount+"%":"0%",t.date,t.time||"",c?.name||"",t.notes||""];});
+    const r2=[...txs].sort((a,b)=>b.date.localeCompare(a.date)).map(t=>{const p=getProd(t.productId);const c=getClient(t.clientId);return[t.type==="sale"?"Venta":"Compra",p?.name||"(logística)",t.qty,(+t.unitPrice).toFixed(0),t.total.toFixed(0),t.discount?t.discount+"%":"0%",t.date,t.time||"",c?.name||"",t.notes||""];});
     const csv=[h1,...r1,[],[h2],...r2].map(r=>r.join(",")).join("\n");
     const blob=new Blob(["\uFEFF"+csv],{type:"text/csv;charset=utf-8"});const url=URL.createObjectURL(blob);const a=document.createElement("a");a.href=url;a.download=`vortex_${todayISO()}.csv`;a.click();
     showToast("CSV exportado ✓");
@@ -663,18 +720,11 @@ export default function App() {
     return ms&&mc&&mf;
   });
 
-  const saleTxs=[...txs].filter(t=>t.type==="sale").sort((a,b)=>{const da=a.date+(a.time||"");const db=b.date+(b.time||"");return db.localeCompare(da);});
-  const purchTxs=[...txs].filter(t=>t.type==="purchase").sort((a,b)=>b.date.localeCompare(a.date));
-
-  const groupDate=arr=>{
-    const g={};
-    arr.forEach(t=>{if(!g[t.date])g[t.date]=[];g[t.date].push(t);});
-    return Object.entries(g).sort((a,b)=>b[0].localeCompare(a[0]));
-  };
-
+  const sortTx=(arr)=>[...arr].sort((a,b)=>(b.date+(b.time||"99:99")).localeCompare(a.date+(a.time||"99:99")));
+  const saleTxs=sortTx(txs.filter(t=>t.type==="sale"));
+  const purchTxs=sortTx(txs.filter(t=>t.type==="purchase"));
   const mvList=mvTab==="sales"?saleTxs:purchTxs;
-  const mvTotal=mvList.reduce((s,t)=>s+t.total,0);
-  const mvQty  =mvList.reduce((s,t)=>s+t.qty,0);
+  const groupDate=arr=>{const g={};arr.forEach(t=>{if(!g[t.date])g[t.date]=[];g[t.date].push(t);});return Object.entries(g).sort((a,b)=>b[0].localeCompare(a[0]));};
 
   const TxItem=({t})=>{
     const p=getProd(t.productId);const c=getClient(t.clientId);
@@ -684,11 +734,10 @@ export default function App() {
           <i className={`ti ${t.type==="sale"?"ti-trending-up":"ti-trending-down"}`} style={{fontSize:22,color:t.type==="sale"?"var(--c-pos)":"var(--c-war)"}} aria-hidden/>
         </div>
         <div style={{minWidth:0}}>
-          <div style={{fontSize:14,fontWeight:700,color:"var(--c-pri)",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",maxWidth:170}}>{p?.name||"—"}</div>
+          <div style={{fontSize:14,fontWeight:700,color:"var(--c-pri)",overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap",maxWidth:170}}>{p?.name||"Logística"}</div>
           <div style={{fontSize:12,color:"var(--c-sec)"}}>
             {t.qty} u. · {fmtS(t.date)}{t.time?` ${t.time}`:""}
-            {c?` · ${c.name}`:t.notes?` · ${t.notes}`:""}
-            {t.discount>0&&<span style={{marginLeft:5}}><Badge v="info" sm>-{t.discount}%</Badge></span>}
+            {c?` · ${c.name}`:t.notes?` · ${t.notes.slice(0,40)}`:""}{t.discount>0&&<span style={{marginLeft:5}}><Badge v="info" sm>-{t.discount}%</Badge></span>}
           </div>
         </div>
       </div>
@@ -700,7 +749,7 @@ export default function App() {
     <style>{`@keyframes slideDown{from{opacity:0;transform:translateX(-50%) translateY(-14px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}`}</style>
 
     {catMgr&&<CategoryManager categories={categories} onSave={saveCategories} onClose={()=>setCatMgr(false)}/>}
-    {resetConf&&<ConfirmModal title="¿Restablecer datos?" msg="Se eliminarán todos tus datos actuales y se cargarán los datos de ejemplo. Esta acción no se puede deshacer." onConfirm={()=>{setProducts(SEED_PRODUCTS);setTxs(SEED_TXS);setClients(SEED_CLIENTS);setCategories(SEED_CATS);setResetConf(false);showToast("Datos restablecidos");}} onCancel={()=>setResetConf(false)}/>}
+    {resetConf&&<ConfirmModal title="¿Restablecer datos?" msg="Volver a los datos originales del negocio. No se puede deshacer." onConfirm={()=>{setProducts(SEED_PRODUCTS);setTxs(SEED_TXS);setClients(SEED_CLIENTS);setCategories(SEED_CATS);setResetConf(false);showToast("Datos restablecidos");}} onCancel={()=>setResetConf(false)}/>}
     <Toast toast={toast}/>
 
     {/* HEADER */}
@@ -716,17 +765,19 @@ export default function App() {
           </div>
         </div>
         <div style={{...R.row,gap:8}}>
-          <IconBtn onClick={exportCSV} icon="ti-download" v="dark"/>
-          <IconBtn onClick={()=>setQuick(q=>!q)} icon={quickOpen?"ti-x":"ti-plus"} v="brand"/>
+          <IconBtn onClick={exportCSV} icon="ti-download" sx={{background:"rgba(255,255,255,0.1)",color:"#fff"}}/>
+          <IconBtn onClick={()=>setQuick(q=>!q)} icon={quickOpen?"ti-x":"ti-plus"} sx={{background:"var(--brand)",color:"#fff",boxShadow:"0 4px 12px var(--brand-glow)"}}/>
         </div>
       </div>
+
       {quickOpen&&<div style={{margin:"0 16px 16px",background:"rgba(255,255,255,0.06)",borderRadius:16,padding:14,display:"grid",gridTemplateColumns:"1fr 1fr",gap:8}}>
-        {[["Nueva venta","ti-receipt","pos"],["Nueva compra","ti-package","war"],["Nuevo producto","ti-plus","inf"],["Nuevo cliente","ti-user-plus","brand"]].map(([l,ic,vc])=>(
+        {[["Nueva venta","ti-receipt","var(--c-pos)"],["Nueva compra","ti-package","var(--c-war)"],["Nuevo producto","ti-plus","var(--c-inf)"],["Nuevo cliente","ti-user-plus","var(--brand)"]].map(([l,ic,col])=>(
           <button key={l} onClick={()=>go({name:l==="Nueva venta"?"add-sale":l==="Nueva compra"?"add-purchase":l==="Nuevo producto"?"add-product":"add-client"})} style={{display:"flex",alignItems:"center",gap:8,padding:"10px 14px",borderRadius:12,background:"rgba(255,255,255,0.07)",border:"none",cursor:"pointer",color:"#fff",fontSize:13,fontWeight:600,fontFamily:"inherit"}}>
-            <i className={`ti ${ic}`} style={{fontSize:18,color:vc==="brand"?"var(--brand)":vc==="pos"?"var(--c-pos)":vc==="war"?"var(--c-war)":"var(--c-inf)"}} aria-hidden/>{l}
+            <i className={`ti ${ic}`} style={{fontSize:18,color:col}} aria-hidden/>{l}
           </button>
         ))}
       </div>}
+
       <div style={{display:"flex",overflowX:"auto",scrollbarWidth:"none",padding:"0 12px"}}>
         {TABS.map(t=>(
           <button key={t.id} onClick={()=>{setTab(t.id);setQuick(false);}} style={{flex:"0 0 auto",background:"none",border:"none",borderBottom:tab===t.id?"2px solid var(--brand)":"2px solid transparent",padding:"10px 14px 12px",cursor:"pointer",color:tab===t.id?"var(--brand)":"rgba(255,255,255,0.35)",fontSize:11,display:"flex",flexDirection:"column",alignItems:"center",gap:3,fontWeight:tab===t.id?800:400,fontFamily:"inherit",minWidth:62}}>
@@ -738,15 +789,16 @@ export default function App() {
 
     <div style={{padding:20,paddingBottom:30}}>
 
-      {/* HOME */}
+      {/* ════ HOME ════ */}
       {tab==="home"&&<>
         <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10,marginBottom:20}}>
-          <StatCard label="Ganancia"   value={C$S(stats.profit)}   sub="Total acumulada"            icon="ti-trending-up" color="brand"/>
+          <StatCard label="Ganancia"   value={C$S(stats.profit)}   sub="Acumulada"                  icon="ti-trending-up" color="brand"/>
           <StatCard label="Ventas"     value={C$S(stats.revenue)}  sub={`${stats.saleCnt} transac.`} icon="ti-cash"        color="positive"/>
-          <StatCard label="Invertido"  value={C$S(stats.invested)} sub="En compras"                  icon="ti-coin"        color="warning"/>
+          <StatCard label="Invertido"  value={C$S(stats.invested)} sub="Total pagado"                icon="ti-coin"        color="warning"/>
           <StatCard label="Inventario" value={C$S(stats.invValue)} sub={`${stats.units} unidades`}   icon="ti-box"         color="neutral"/>
         </div>
 
+        {/* Trend */}
         <Card shadow sx={{marginBottom:20}}>
           <div style={{...R.rowB,marginBottom:14}}>
             <div>
@@ -763,13 +815,32 @@ export default function App() {
           </div>
         </Card>
 
+        {/* Resumen de lotes en tránsito */}
+        <Card sx={{borderColor:"var(--brand)",marginBottom:20}}>
+          <SectionLabel text="📦 Lotes en tránsito"/>
+          {[
+            {icon:"✈",label:"Lote A · ETA mar/mié próx. semana",detail:"6 PLUS + 3 MAX · Ctas. Marjorie & Yisleni"},
+            {icon:"✈",label:"Lote B Relatos · ETA jueves próx.",detail:"3 HD + 3 SELECT · Cta. Relatos"},
+            {icon:"✈",label:"Lote B Marjorie · ETA ~3 semanas",detail:"3 HD + 3 SELECT · BARCO · Cta. Marjorie"},
+          ].map((r,i)=>(
+            <div key={i} style={{...R.row,gap:10,padding:"10px 0",borderTop:i>0?"0.5px solid var(--brd3)":"none"}}>
+              <span style={{fontSize:20}}>{r.icon}</span>
+              <div>
+                <div style={{fontSize:13,fontWeight:700,color:"var(--c-pri)"}}>{r.label}</div>
+                <div style={{fontSize:12,color:"var(--c-sec)"}}>{r.detail}</div>
+              </div>
+            </div>
+          ))}
+        </Card>
+
+        {/* Low stock */}
         {lowStock.length>0&&<Card sx={{borderColor:"var(--c-dan)",marginBottom:20}}>
           <div style={{...R.row,gap:10,marginBottom:12}}>
             <div style={{width:34,height:34,borderRadius:10,background:"var(--bg-dan)",display:"flex",alignItems:"center",justifyContent:"center"}}>
               <i className="ti ti-alert-triangle" style={{fontSize:18,color:"var(--c-dan)"}} aria-hidden/>
             </div>
             <div>
-              <div style={{fontSize:14,fontWeight:700,color:"var(--c-dan)"}}>Alerta de stock bajo</div>
+              <div style={{fontSize:14,fontWeight:700,color:"var(--c-dan)"}}>Stock bajo</div>
               <div style={{fontSize:12,color:"var(--c-sec)"}}>{lowStock.length} producto{lowStock.length>1?"s":""} por reabastecer</div>
             </div>
           </div>
@@ -784,6 +855,7 @@ export default function App() {
           ))}
         </Card>}
 
+        {/* Top productos */}
         {saleTxs.length>0&&(()=>{
           const by={};saleTxs.forEach(t=>{const p=getProd(t.productId);if(p){if(!by[p.id])by[p.id]={name:p.name,rev:0,qty:0};by[p.id].rev+=t.total;by[p.id].qty+=t.qty;}});
           const sorted=Object.values(by).sort((a,b)=>b.rev-a.rev).slice(0,4);
@@ -810,21 +882,20 @@ export default function App() {
           <button onClick={()=>setTab("moves")} style={{background:"none",border:"none",cursor:"pointer",fontSize:13,color:"var(--brand)",fontFamily:"inherit",fontWeight:700}}>Ver todo →</button>
         }/>
         {txs.length===0&&<Empty icon="ti-clock" text="Sin actividad aún"/>}
-        {[...txs].sort((a,b)=>{const da=a.date+(a.time||"");const db=b.date+(b.time||"");return db.localeCompare(da);}).slice(0,5).map(t=><TxItem key={t.id} t={t}/>)}
+        {sortTx(txs).slice(0,5).map(t=><TxItem key={t.id} t={t}/>)}
       </>}
 
-      {/* PRODUCTS */}
+      {/* ════ PRODUCTS ════ */}
       {tab==="products"&&<>
         <div style={{...R.row,gap:8,marginBottom:14}}>
           <div style={{flex:1,position:"relative"}}>
             <input value={search} onChange={e=>setSearch(e.target.value)} placeholder="Buscar nombre o SKU…" style={{width:"100%",paddingLeft:36}}/>
             <i className="ti ti-search" style={{position:"absolute",left:11,top:"50%",transform:"translateY(-50%)",color:"var(--c-ter)",fontSize:16,pointerEvents:"none"}} aria-hidden/>
-            {search&&<button onClick={()=>setSearch("")} style={{position:"absolute",right:10,top:"50%",transform:"translateY(-50%)",background:"none",border:"none",cursor:"pointer",color:"var(--c-ter)",display:"flex"}}>
-              <i className="ti ti-x" aria-hidden/>
-            </button>}
+            {search&&<button onClick={()=>setSearch("")} style={{position:"absolute",right:10,top:"50%",transform:"translateY(-50%)",background:"none",border:"none",cursor:"pointer",color:"var(--c-ter)",display:"flex"}}><i className="ti ti-x" aria-hidden/></button>}
           </div>
           <Btn onClick={()=>go({name:"add-product"})} v="brand" sm icon="ti-plus">Nuevo</Btn>
         </div>
+
         <div style={{...R.row,gap:6,marginBottom:10,overflowX:"auto",scrollbarWidth:"none",paddingBottom:4}}>
           {allCats.map(c=>(
             <button key={c} onClick={()=>setCat(c)} style={{padding:"6px 14px",borderRadius:99,fontSize:13,fontWeight:600,border:"1.5px solid",cursor:"pointer",fontFamily:"inherit",whiteSpace:"nowrap",borderColor:catFilter===c?"var(--brand)":"var(--brd2)",background:catFilter===c?"var(--brand)":"transparent",color:catFilter===c?"#fff":"var(--c-sec)"}}>
@@ -835,6 +906,7 @@ export default function App() {
             <i className="ti ti-settings" style={{fontSize:13}} aria-hidden/> Gestionar
           </button>
         </div>
+
         <div style={{...R.row,gap:6,marginBottom:14,flexWrap:"wrap"}}>
           {[["all","Todos"],["in","En stock"],["low","Bajo"],["out","Sin stock"]].map(([v,l])=>(
             <button key={v} onClick={()=>setStockF(v)} style={{padding:"5px 12px",borderRadius:99,fontSize:12,fontWeight:700,border:"1px solid",cursor:"pointer",fontFamily:"inherit",borderColor:stockF===v?"var(--c-pri)":"var(--brd2)",background:stockF===v?"var(--c-pri)":"transparent",color:stockF===v?"var(--bg1)":"var(--c-sec)"}}>
@@ -843,7 +915,9 @@ export default function App() {
           ))}
           <span style={{fontSize:12,color:"var(--c-ter)",alignSelf:"center",marginLeft:"auto"}}>{filtProds.length} productos</span>
         </div>
-        {filtProds.length===0&&<Empty icon="ti-box-off" title="Sin resultados" text={products.length===0?"Agrega tu primer producto para comenzar":"Prueba con otro filtro o búsqueda"} action={products.length===0&&<Btn onClick={()=>go({name:"add-product"})} v="brand" icon="ti-plus">Agregar producto</Btn>}/>}
+
+        {filtProds.length===0&&<Empty icon="ti-box-off" title="Sin resultados" text={products.length===0?"Agrega tu primer producto":"Prueba otro filtro"} action={products.length===0&&<Btn onClick={()=>go({name:"add-product"})} v="brand" icon="ti-plus">Agregar producto</Btn>}/>}
+
         {filtProds.map(p=>(
           <Card key={p.id} onClick={()=>go({name:"product-detail",data:p})} shadow>
             <div style={{...R.rowB,marginBottom:8}}>
@@ -866,10 +940,11 @@ export default function App() {
               <div style={{display:"flex",gap:14,fontSize:13}}>
                 <span style={{color:"var(--c-sec)"}}>Costo: <strong style={{color:"var(--c-war)"}}>{C$S(p.buyPrice)}</strong></span>
                 <span style={{color:"var(--c-sec)"}}>Venta: <strong style={{color:"var(--c-pos)"}}>{C$S(p.sellPrice)}</strong></span>
+                <span style={{color:"var(--c-sec)"}}>Margen: <strong style={{color:"var(--brand)"}}>{C$S(p.sellPrice-p.buyPrice)}</strong></span>
               </div>
               <div style={{display:"flex",gap:6}} onClick={e=>e.stopPropagation()}>
-                <IconBtn onClick={()=>go({name:"add-sale",data:{pid:p.id}})}     icon="ti-receipt" size={30} sx={{background:"var(--bg-pos)",color:"var(--c-pos)"}}/>
-                <IconBtn onClick={()=>go({name:"add-purchase",data:{pid:p.id}})} icon="ti-package" size={30} sx={{background:"var(--bg-war)",color:"var(--c-war)"}}/>
+                <IconBtn onClick={()=>go({name:"add-sale",data:{pid:p.id}})}     icon="ti-receipt" sx={{background:"var(--bg-pos)",color:"var(--c-pos)"}} size={30}/>
+                <IconBtn onClick={()=>go({name:"add-purchase",data:{pid:p.id}})} icon="ti-package" sx={{background:"var(--bg-war)",color:"var(--c-war)"}} size={30}/>
                 <IconBtn onClick={()=>go({name:"edit-product",data:p})}          icon="ti-edit"    size={30}/>
               </div>
             </div>
@@ -877,24 +952,25 @@ export default function App() {
         ))}
       </>}
 
-      {/* MOVES */}
+      {/* ════ MOVES ════ */}
       {tab==="moves"&&<>
         <div style={{...R.rowB,marginBottom:16}}>
           <div>
             <div style={{...R.label,marginBottom:2}}>{mvTab==="sales"?"Total en ventas":"Total invertido"}</div>
-            <div style={{fontSize:28,fontWeight:800,color:mvTab==="sales"?"var(--c-pos)":"var(--c-war)"}}>{C$S(mvTotal)}</div>
-            <div style={{fontSize:12,color:"var(--c-sec)",marginTop:2}}>{mvList.length} transacciones · {mvQty} unidades</div>
+            <div style={{fontSize:28,fontWeight:800,color:mvTab==="sales"?"var(--c-pos)":"var(--c-war)"}}>{C$S(mvList.reduce((s,t)=>s+t.total,0))}</div>
+            <div style={{fontSize:12,color:"var(--c-sec)",marginTop:2}}>{mvList.length} registros · {mvList.reduce((s,t)=>s+t.qty,0)} unidades</div>
           </div>
           <Btn onClick={()=>go({name:mvTab==="sales"?"add-sale":"add-purchase"})} v={mvTab==="sales"?"positive":"warning"} icon="ti-plus">Nueva</Btn>
         </div>
+
         <div style={{display:"flex",background:"var(--bg2)",borderRadius:12,padding:4,marginBottom:16}}>
           {[["sales","Ventas"],["purchases","Compras"]].map(([v,l])=>(
-            <button key={v} onClick={()=>setMvTab(v)} style={{flex:1,padding:"9px",borderRadius:9,border:"none",cursor:"pointer",fontFamily:"inherit",fontSize:14,fontWeight:700,background:mvTab===v?"var(--bg1)":"transparent",color:mvTab===v?"var(--c-pri)":"var(--c-sec)",boxShadow:mvTab===v?"0 2px 10px rgba(0,0,0,0.1)":"none"}}>
-              {l}
-            </button>
+            <button key={v} onClick={()=>setMvTab(v)} style={{flex:1,padding:"9px",borderRadius:9,border:"none",cursor:"pointer",fontFamily:"inherit",fontSize:14,fontWeight:700,background:mvTab===v?"var(--bg1)":"transparent",color:mvTab===v?"var(--c-pri)":"var(--c-sec)",boxShadow:mvTab===v?"0 2px 10px rgba(0,0,0,0.1)":"none"}}>{l}</button>
           ))}
         </div>
-        {mvList.length===0&&<Empty icon={mvTab==="sales"?"ti-receipt-off":"ti-shopping-cart-off"} title="Sin registros" text={`No hay ${mvTab==="sales"?"ventas":"compras"} registradas aún`}/>}
+
+        {mvList.length===0&&<Empty icon={mvTab==="sales"?"ti-receipt-off":"ti-shopping-cart-off"} title="Sin registros" text={`No hay ${mvTab==="sales"?"ventas":"compras"} registradas`}/>}
+
         {groupDate(mvList).map(([date,ts])=>(
           <div key={date} style={{marginBottom:8}}>
             <div style={{...R.rowB,marginBottom:8}}>
@@ -906,7 +982,7 @@ export default function App() {
         ))}
       </>}
 
-      {/* CLIENTS */}
+      {/* ════ CLIENTS ════ */}
       {tab==="clients"&&<>
         <div style={{...R.rowB,marginBottom:16}}>
           <div>
@@ -915,7 +991,7 @@ export default function App() {
           </div>
           <Btn onClick={()=>go({name:"add-client"})} v="brand" icon="ti-user-plus">Nuevo</Btn>
         </div>
-        {clients.length===0&&<Empty icon="ti-users" title="Sin clientes" text="Agrega tus clientes para llevar mejor control de cada venta" action={<Btn onClick={()=>go({name:"add-client"})} v="brand" icon="ti-user-plus">Agregar cliente</Btn>}/>}
+        {clients.length===0&&<Empty icon="ti-users" title="Sin clientes aún" text="Agrega tus clientes para llevar el control de cada venta" action={<Btn onClick={()=>go({name:"add-client"})} v="brand" icon="ti-user-plus">Agregar cliente</Btn>}/>}
         {clients.map(c=>{
           const cTxs=txs.filter(t=>t.type==="sale"&&t.clientId===c.id);
           const cTotal=cTxs.reduce((s,t)=>s+t.total,0);
@@ -938,43 +1014,57 @@ export default function App() {
         })}
       </>}
 
-      {/* REPORTS */}
+      {/* ════ REPORTS ════ */}
       {tab==="reports"&&(()=>{
         const gPct=stats.revenue>0?((stats.profit/stats.revenue)*100).toFixed(1):0;
         const roi =stats.invested>0?((stats.profit/stats.invested)*100).toFixed(1):0;
         const avgTk=stats.saleCnt>0?stats.revenue/stats.saleCnt:0;
         const byProd={};
         products.forEach(p=>{byProd[p.id]={id:p.id,name:p.name,buyPrice:p.buyPrice,stock:p.stock,soldQty:0,rev:0,profit:0};});
-        txs.forEach(t=>{if(t.type==="sale"&&byProd[t.productId]){byProd[t.productId].soldQty+=t.qty;byProd[t.productId].rev+=t.total;byProd[t.productId].profit+=(t.unitPrice-byProd[t.productId].buyPrice)*t.qty;}});
+        txs.forEach(t=>{if(t.type==="sale"&&t.productId&&byProd[t.productId]){byProd[t.productId].soldQty+=t.qty;byProd[t.productId].rev+=t.total;byProd[t.productId].profit+=(t.unitPrice-byProd[t.productId].buyPrice)*t.qty;}});
         const ps=Object.values(byProd).sort((a,b)=>b.rev-a.rev);
         const sold=ps.filter(p=>p.soldQty>0);
         const maxP=Math.max(...ps.map(x=>x.profit),1);
         const n=new Date();
         const monthly=Array.from({length:6},(_,i)=>{const d=new Date(n);d.setMonth(d.getMonth()-5+i);const m=d.getMonth(),y=d.getFullYear();const mTxs=txs.filter(t=>t.type==="sale"&&new Date(t.date+"T12:00").getMonth()===m&&new Date(t.date+"T12:00").getFullYear()===y);return{label:`${MONTHS[m]} ${y}`,rev:mTxs.reduce((s,t)=>s+t.total,0),cnt:mTxs.length};}).reverse();
+        // Potential revenue
+        const potential=products.reduce((s,p)=>s+p.sellPrice*p.stock,0);
+        const potentialProfit=products.reduce((s,p)=>s+(p.sellPrice-p.buyPrice)*p.stock,0);
         return <>
+          {/* P&L */}
           <div style={{background:"linear-gradient(160deg,#0f0f0f,#1a0a00)",borderRadius:20,padding:20,marginBottom:16,boxShadow:"0 8px 32px rgba(0,0,0,0.25)"}}>
             <div style={{...R.label,color:"rgba(255,255,255,0.35)",marginBottom:16}}>Estado de resultados</div>
             {[["Ingresos por ventas",C$S(stats.revenue),"var(--c-pos)"],["Costo de ventas",`- ${C$S(stats.cogs)}`,"var(--c-war)"]].map(([l,v,c])=>(
-              <div key={l} style={{...R.rowB,marginBottom:12}}>
-                <span style={{fontSize:14,color:"rgba(255,255,255,0.5)"}}>{l}</span>
-                <span style={{fontSize:14,fontWeight:700,color:c}}>{v}</span>
-              </div>
+              <div key={l} style={{...R.rowB,marginBottom:12}}><span style={{fontSize:14,color:"rgba(255,255,255,0.5)"}}>{l}</span><span style={{fontSize:14,fontWeight:700,color:c}}>{v}</span></div>
             ))}
             <Divider my={4}/>
             <div style={{...R.rowB,marginTop:12}}>
-              <span style={{fontSize:15,fontWeight:700,color:"rgba(255,255,255,0.75)"}}>Ganancia bruta</span>
+              <span style={{fontSize:15,fontWeight:700,color:"rgba(255,255,255,0.75)"}}>Ganancia realizada</span>
               <span style={{fontSize:30,fontWeight:800,color:stats.profit>=0?"var(--brand)":"var(--c-dan)"}}>{C$S(stats.profit)}</span>
             </div>
           </div>
+
+          {/* Proyección */}
+          <Card shadow sx={{marginBottom:16}}>
+            <SectionLabel text="📊 Proyección si se vende todo"/>
+            <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
+              <div style={R.surf}><div style={{...R.label,marginBottom:4}}>Ingresos potenciales</div><div style={{fontSize:18,fontWeight:800,color:"var(--c-pos)"}}>{C$S(potential)}</div><div style={{fontSize:11,color:"var(--c-ter)"}}>con stock actual</div></div>
+              <div style={R.surf}><div style={{...R.label,marginBottom:4}}>Ganancia potencial</div><div style={{fontSize:18,fontWeight:800,color:"var(--brand)"}}>{C$S(potentialProfit)}</div><div style={{fontSize:11,color:"var(--c-ter)"}}>con stock actual</div></div>
+            </div>
+          </Card>
+
+          {/* KPIs */}
           <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10,marginBottom:16}}>
             <StatCard label="Margen bruto"    value={`${gPct}%`}    icon="ti-percentage"  color="brand"/>
             <StatCard label="ROI"             value={`${roi}%`}     icon="ti-trending-up"  color={+roi>=0?"positive":"neutral"}/>
             <StatCard label="Ticket promedio" value={C$S(avgTk)}   icon="ti-receipt"      color="info"/>
             <StatCard label="En inventario"   value={C$S(stats.invValue)} icon="ti-box"  color="warning"/>
           </div>
+
+          {/* By product */}
           <Card shadow sx={{marginBottom:16}}>
             <SectionLabel text="Ganancia por producto"/>
-            {sold.length===0&&<Empty icon="ti-chart-bar" text="Sin ventas registradas aún"/>}
+            {sold.length===0&&<div style={{textAlign:"center",padding:"20px 0",color:"var(--c-ter)",fontSize:13}}>Sin ventas registradas aún</div>}
             {sold.map((p,i)=>(
               <div key={p.id} style={{marginBottom:18,cursor:"pointer"}} onClick={()=>go({name:"product-detail",data:products.find(x=>x.id===p.id)})}>
                 <div style={{...R.rowB,marginBottom:5}}>
@@ -991,24 +1081,25 @@ export default function App() {
               </div>
             ))}
           </Card>
+
+          {/* Monthly */}
           <Card shadow sx={{marginBottom:16}}>
             <SectionLabel text="Ventas por mes (últimos 6)"/>
             {monthly.map((m,i)=>(
               <div key={i} style={{...R.rowB,padding:"9px 0",borderTop:i>0?"0.5px solid var(--brd3)":"none"}}>
-                <div>
-                  <div style={{fontSize:14,fontWeight:600,color:"var(--c-pri)"}}>{m.label}</div>
-                  <div style={{fontSize:11,color:"var(--c-ter)"}}>{m.cnt} transacciones</div>
-                </div>
+                <div><div style={{fontSize:14,fontWeight:600,color:"var(--c-pri)"}}>{m.label}</div><div style={{fontSize:11,color:"var(--c-ter)"}}>{m.cnt} transacciones</div></div>
                 <div style={{fontSize:15,fontWeight:800,color:m.rev>0?"var(--c-pos)":"var(--c-ter)"}}>{C$S(m.rev)}</div>
               </div>
             ))}
           </Card>
+
+          {/* Data zone */}
           <Card sx={{borderColor:"var(--brd2)"}}>
             <SectionLabel text="Datos y exportación"/>
-            <p style={{fontSize:13,color:"var(--c-sec)",marginBottom:14,lineHeight:1.6}}>Tus datos se guardan automáticamente en este dispositivo cada vez que haces un cambio.</p>
+            <p style={{fontSize:13,color:"var(--c-sec)",marginBottom:14,lineHeight:1.6}}>Tus datos se guardan automáticamente en este dispositivo cada vez que realizas un cambio.</p>
             <div style={{...R.col,gap:10}}>
-              <Btn onClick={exportCSV} full lg icon="ti-file-spreadsheet">Exportar reporte CSV</Btn>
-              <Btn onClick={()=>setResetConf(true)} v="ghost-dan" full icon="ti-refresh">Restablecer datos de ejemplo</Btn>
+              <Btn onClick={exportCSV} full lg icon="ti-file-spreadsheet">Exportar reporte CSV completo</Btn>
+              <Btn onClick={()=>setResetConf(true)} v="ghost-dan" full icon="ti-refresh">Restablecer datos iniciales</Btn>
             </div>
           </Card>
         </>;
